@@ -1,6 +1,4 @@
-[English](https://github.com/obgnail/typora_plugin/blob/master/README.md) | 简体中文
-
-> Typora 1.14.15 macOS/WKWebView 实验性 Beta：[中文安装与兼容说明](docs/macos.zh-CN.md) · [安全审计](docs/macos-security-audit.md) · [English](docs/macos.md)。本流程只修改 `/private/tmp` 中的 ad-hoc 签名副本，不是 Apple 公证的分发方案。
+[English](README.md) | 简体中文
 
 <div align="center">
   <h1>Typora Plugin</h1>
@@ -10,11 +8,25 @@
     <a href="https://github.com/obgnail/typora_plugin/stargazers"><img src="https://img.shields.io/github/stars/obgnail/typora_plugin?style=flat"></a>
     <a href="https://github.com/obgnail/typora_plugin/issues"><img src="https://img.shields.io/github/issues-closed/obgnail/typora_plugin.svg"></a>
     <a href="https://github.com/obgnail/typora_plugin/tree/master/plugin"><img src="https://img.shields.io/badge/implementation-Native-greenbule"></a>
-    <a href="https://github.com/obgnail/typora_plugin?tab=readme-ov-file#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%E4%B8%80%E8%87%AA%E5%8A%A8"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux-0085a1"></a>
+    <a href="docs/macos.zh-CN.md"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS%20Beta-0085a1"></a>
     <a href="https://github.com/obgnail/typora_plugin/blob/master/LICENSE"><img src="https://img.shields.io/github/license/obgnail/typora_plugin"></a>
     <a href="https://deepwiki.com/obgnail/typora_plugin"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
   </p>
 </div>
+
+> 本仓库派生自 [obgnail/typora_plugin](https://github.com/obgnail/typora_plugin)。Windows、Linux 支持、插件目录及原始实现均归功于上游项目；实验性 macOS 移植是本 Fork 为提交上游审查而进行的工作。
+
+## macOS 实验性 Beta
+
+| 平台 | 支持状态 |
+|---|---|
+| Windows | 上游项目正式支持 |
+| Linux | 上游项目正式支持 |
+| macOS | 仅实验性支持 Typora 1.14.15 |
+
+macOS 移植并非 Typora 官方功能，也未经 Apple 公证。它只安装到独立的 ad-hoc 签名应用副本，不要求修改 `/Applications/Typora.app`。目前仅实际验证了以下六个插件：`callouts`、`editor_width_slider`、`collapse_paragraph`、`fence_enhance`、`command_palette` 和 `markmap`。下方其他插件不能视为已兼容 macOS。
+
+[macOS 中文安装说明](docs/macos.zh-CN.md) · [macOS Installation (English)](docs/macos.md) · [安全审计](docs/macos-security-audit.md)
 
 
 ## 插件列表

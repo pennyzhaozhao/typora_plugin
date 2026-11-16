@@ -13,7 +13,7 @@ mkdir -p "$STAGE/typora-plugin-$VERSION/docs/releases" "$OUT_DIR"
 ditto --noextattr --norsrc "$ROOT/plugin" "$STAGE/typora-plugin-$VERSION/plugin"
 cp "$ROOT/README.md" "$ROOT/README-cn.md" "$ROOT/LICENSE" "$STAGE/typora-plugin-$VERSION/"
 cp "$ROOT/docs/macos.md" "$ROOT/docs/macos.zh-CN.md" "$ROOT/docs/macos-security-audit.md" "$STAGE/typora-plugin-$VERSION/docs/"
-cp "$ROOT/docs/releases/$VERSION.md" "$STAGE/typora-plugin-$VERSION/docs/releases/"
+cp "$ROOT/docs/releases/$VERSION.md" "$ROOT/docs/releases/$VERSION.zh-CN.md" "$STAGE/typora-plugin-$VERSION/docs/releases/"
 
 rm -f "$ARCHIVE" "$ARCHIVE.sha256"
 (cd "$STAGE" && /usr/bin/zip -X -q -r "$ARCHIVE" "typora-plugin-$VERSION")

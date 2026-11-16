@@ -1,6 +1,6 @@
 # macOS 实验性 Beta
 
-[English](macos.md) · [安全审计](macos-security-audit.md) · [发布说明草稿](releases/v0.1.0-macos-beta.md)
+[English](macos.md) · [安全审计](macos-security-audit.md) · [发布说明草稿](releases/v0.1.0-macos-beta.zh-CN.md)
 
 本流程仅验证了 macOS arm64/x86_64 上的 Typora **1.14.15**。安装器会复制并临时签名一个私人开发副本；它未经 Apple 公证，也不是 Typora 官方版本。请勿分发修改后的 `Typora.app`。
 

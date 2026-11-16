@@ -3,6 +3,7 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: test-${{ github.workflow }}-${{ github.ref }}
@@ -76,7 +77,7 @@ jobs:
 
       - name: Validate shell syntax
         working-directory: .
-        run: bash -n plugin/bin/diagnose_macos.sh plugin/bin/install_macos.sh plugin/bin/sign_macos_dev.sh plugin/bin/uninstall_macos.sh develop/scripts/test_macos_installer.sh
+        run: bash -n plugin/bin/diagnose_macos.sh plugin/bin/install_macos.sh plugin/bin/package_macos_beta.sh plugin/bin/sign_macos_dev.sh plugin/bin/uninstall_macos.sh develop/scripts/test_macos_installer.sh
 
       - name: Validate macOS JavaScript syntax
         working-directory: .
@@ -89,7 +90,7 @@ jobs:
         run: npm test -- --test-concurrency=1
 
       - name: Run focused macOS tests
-        run: node --require ../plugin/global/core/polyfill.js --test test/macos_bridge.test.js test/macos_html.test.js test/macos_runtime.test.js test/markmap_macos.test.js
+        run: node --require ../plugin/global/core/polyfill.js --test test/macos_bridge.test.js test/macos_html.test.js test/macos_launch_agent.test.js test/macos_runtime.test.js test/markmap_macos.test.js test/plugin_entrypoint.test.js
 
       - name: Test installer, repeat install, rollback, and uninstall
         working-directory: .

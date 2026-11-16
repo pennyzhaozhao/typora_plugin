@@ -1,6 +1,4 @@
-English | [简体中文](https://github.com/obgnail/typora_plugin/blob/master/README-cn.md)
-
-> Experimental Typora 1.14.15 macOS/WKWebView beta: [installation and compatibility](docs/macos.md) · [security audit](docs/macos-security-audit.md) · [简体中文](docs/macos.zh-CN.md). It uses an isolated ad-hoc-signed copy and is not a notarized distribution workflow.
+English | [简体中文](README-cn.md)
 
 <div align="center">
   <h1>Typora Plugin</h1>
@@ -10,11 +8,25 @@ English | [简体中文](https://github.com/obgnail/typora_plugin/blob/master/RE
     <a href="https://github.com/obgnail/typora_plugin/stargazers"><img src="https://img.shields.io/github/stars/obgnail/typora_plugin?style=flat"></a>
     <a href="https://github.com/obgnail/typora_plugin/issues"><img src="https://img.shields.io/github/issues-closed/obgnail/typora_plugin.svg"></a>
     <a href="https://github.com/obgnail/typora_plugin/tree/master/plugin"><img src="https://img.shields.io/badge/implementation-Native-greenbule"></a>
-    <a href="https://github.com/obgnail/typora_plugin?tab=readme-ov-file#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95%E4%B8%80%E8%87%AA%E5%8A%A8"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux-0085a1"></a>
+    <a href="docs/macos.md"><img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS%20Beta-0085a1"></a>
     <a href="https://github.com/obgnail/typora_plugin/blob/master/LICENSE"><img src="https://img.shields.io/github/license/obgnail/typora_plugin"></a>
     <a href="https://deepwiki.com/obgnail/typora_plugin"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
   </p>
 </div>
+
+> This repository is a fork of [obgnail/typora_plugin](https://github.com/obgnail/typora_plugin). Windows and Linux support, the plugin catalogue, and the original implementation are credited to the upstream project. The experimental macOS port is fork-local work intended for upstream review.
+
+## Experimental macOS Beta
+
+| Platform | Support status |
+|---|---|
+| Windows | Supported by the upstream project |
+| Linux | Supported by the upstream project |
+| macOS | Experimental development support for Typora 1.14.15 only |
+
+The macOS port is unofficial and not Apple-notarized. It installs into a separate ad-hoc-signed application copy and never requires modifying `/Applications/Typora.app`. Only these six plugins have been interactively verified: `callouts`, `editor_width_slider`, `collapse_paragraph`, `fence_enhance`, `command_palette`, and `markmap`. The rest of the catalogue below must not be assumed macOS-compatible.
+
+[Install on macOS (English)](docs/macos.md) · [macOS 安装说明（简体中文）](docs/macos.zh-CN.md) · [Security audit](docs/macos-security-audit.md)
 
 ## Plugin List
 
