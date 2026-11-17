@@ -16,8 +16,15 @@ class SidebarEnhancePlugin extends BasePlugin {
     if (this.config.CTRL_WHEEL_TO_SCROLL_SIDEBAR) {
       this._ctrlWheelToScroll()
     }
-    if (this.config.ENABLE_FILE_COUNT) {
+    if (this.config.ENABLE_FILE_COUNT && global.__typoraMacCapabilities?.documentFilesystem !== false) {
       this._fileCount()
+    } else if (this.config.ENABLE_FILE_COUNT && global.__typoraMacCapabilities?.documentFilesystem === false) {
+      global.__typoraMacReportRuntime?.({
+        kind: "plugin-feature-unsupported",
+        plugin: this.fixedName,
+        feature: "file-count",
+        reason: "secure macOS adapter does not grant recursive document-directory access",
+      })
     }
   }
 

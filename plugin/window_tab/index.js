@@ -770,9 +770,9 @@ class WindowTabPlugin extends BasePlugin {
     })
     this.utils.eventHub.on(this.utils.eventHub.eventType.toggleSettingPage, hide => this.entities.windowTab.style.visibility = hide ? "hidden" : "initial")
 
-    const isHeaderReady = () => this.utils.isBetaVersion ? this.entities.header.getBoundingClientRect().height : true
+    const isHeaderReady = () => !this.entities.header || !this.utils.isBetaVersion || this.entities.header.getBoundingClientRect().height
     const adjustTop = () => setTimeout(() => {
-      if (!this.config.HIDE_WINDOW_TITLE_BAR) {
+      if (!this.config.HIDE_WINDOW_TITLE_BAR && this.entities.header) {
         const { height, top } = this.entities.header.getBoundingClientRect()
         this.entities.windowTab.style.top = `${height + top}px`
       }
@@ -817,7 +817,18 @@ class WindowTabPlugin extends BasePlugin {
   _handleDrag = () => new TabDragManager(this).init()
 
   _handleRename = () => {
-    reqnode("electron").ipcRenderer.on("didRename", (sender, { oldPath, newPath }) => {
+    let ipcRenderer
+    try {
+      ipcRenderer = reqnode("electron").ipcRenderer
+    } catch (error) {
+      // Typora for macOS 1.14 uses WKWebView and does not expose Electron.
+      // File renames still refresh through Typora's normal lifecycle; only the
+      // optional Electron notification is unavailable.
+      if (process.platform === "darwin") return
+      throw error
+    }
+    if (!ipcRenderer?.on) return
+    ipcRenderer.on("didRename", (sender, { oldPath, newPath }) => {
       try {
         const isDir = this.utils.Package.FsExtra.statSync(newPath).isDirectory()
         this.tab.rename(oldPath, newPath, isDir)

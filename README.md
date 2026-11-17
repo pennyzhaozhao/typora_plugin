@@ -24,7 +24,7 @@ English | [简体中文](README-cn.md)
 | Linux | Supported by the upstream project |
 | macOS | Experimental development support for Typora 1.14.15 only |
 
-The macOS port is unofficial and not Apple-notarized. It installs into a separate ad-hoc-signed application copy and never requires modifying `/Applications/Typora.app`. Only these six plugins have been interactively verified: `callouts`, `editor_width_slider`, `collapse_paragraph`, `fence_enhance`, `command_palette`, and `markmap`. The rest of the catalogue below must not be assumed macOS-compatible.
+The macOS port is unofficial and not Apple-notarized. It installs into a separate ad-hoc-signed application copy and never requires modifying `/Applications/Typora.app`. Ten plugins have now been interactively verified: `callouts`, `editor_width_slider`, `collapse_paragraph`, `fence_enhance`, `command_palette`, `markmap`, `action_buttons`, `preferences`, `right_click_menu`, and `text_stylize`. Forty-six default-enabled plugins complete JavaScript startup, but plugins outside the ten named above must not yet be assumed fully macOS-compatible.
 
 [Install on macOS (English)](docs/macos.md) · [macOS 安装说明（简体中文）](docs/macos.zh-CN.md) · [Security audit](docs/macos-security-audit.md)
 

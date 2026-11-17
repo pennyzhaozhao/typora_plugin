@@ -46,7 +46,7 @@ WKWebView supplies `null` for local-file origins; accepting it is necessary but 
 
 ## Verified compatibility
 
-Live tests used Typora 1.14.15 in `/private/tmp`, a real Markdown document, authenticated runtime reports, and a 14-second post-startup observation window.
+Live tests used Typora 1.14.15 in `/private/tmp`, a real Markdown document, authenticated runtime reports, and a 20-second post-startup observation window.
 
 | Plugin | JavaScript | UI / interaction | Persistence | Shortcut | Result |
 |---|---:|---:|---:|---:|---|
@@ -56,14 +56,19 @@ Live tests used Typora 1.14.15 in `/private/tmp`, a real Markdown document, auth
 | `fence_enhance` | Pass | Toolbar rendered; real CodeMirror fence folded | Pass | Default not configured | Works |
 | `command_palette` | Pass | Overlay search and Escape interaction | N/A | `Control/Command+Shift+P` pass | Works |
 | `markmap` | Pass | Local assets, SVG nodes, and Fit interaction | Session-local | Default not configured | Works |
+| `action_buttons` | Pass | Floating gear button rendered and opened Preferences | N/A | Mouse interaction passed | Works |
+| `preferences` | Pass | Configuration panel and plugin menu rendered | Settings write/read passed | Via action button | Works |
+| `right_click_menu` | Pass | Plugin submenu rendered and dispatched an action | N/A | Context-menu interaction passed | Works |
+| `text_stylize` | Pass | Styling panel and tools rendered | Through Preferences | Tool hover/selection passed | Works |
 
-The framework completed repeated cold starts. Compatibility fixes cover the WKWebView module adapter, external settings, UTF-8 spelling normalization, deferred/post-load bootstrap, optional host menu decorators, native alert DOM, and Markmap lazy-load ordering.
+The framework completed repeated cold starts. A default-configuration run loaded 46 plugins without console errors or unhandled rejections. This is startup evidence, not a claim that all 46 have passed feature-level interaction testing. Compatibility fixes cover the WKWebView module adapter, safe `stat`/`lstat`, external settings, UTF-8 spelling normalization, deferred/post-load bootstrap, missing Electron rename events and header DOM, optional host menu decorators, native alert DOM, and Markmap lazy-load ordering.
 
 ## Known limitations and troubleshooting
 
 - Ad-hoc signing is local development only. `codesign --verify --deep --strict` should pass; Gatekeeper `spctl` is expected to reject a non-notarized build.
 - Do not use Desktop, iCloud, or File Provider locations. Recreated metadata can invalidate a signature.
-- Only Typora 1.14.15 and the six plugins above are claimed compatible. Other plugins are unverified.
+- Only Typora 1.14.15 and the ten plugins above have feature-level compatibility evidence. Other plugins remain unverified beyond startup.
+- `commander` is intentionally unavailable because the secure bridge does not expose arbitrary shell execution. `sidebar_enhance` file counting and other features that recursively scan the document directory are disabled or unavailable until a safe user-granted folder model is implemented.
 - The bridge needs a user LaunchAgent and free loopback port 45678.
 - If startup fails, inspect `bridge.log`, run the diagnostic script, confirm LTS Node is on `PATH`, and reinstall to rotate credentials and refresh signing.
 - Never remove quarantine automatically, disable SIP, weaken Gatekeeper, or patch Typora's minified source.

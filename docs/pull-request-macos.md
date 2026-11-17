@@ -22,7 +22,7 @@ This PR proposes experimental support for Typora 1.14.15's native macOS WKWebVie
 
 ### Compatibility evidence
 
-The original framework container and these six plugins were interactively tested in Typora 1.14.15 on macOS arm64:
+The original framework container and these ten plugins were interactively tested in Typora 1.14.15 on macOS arm64:
 
 - `callouts`
 - `editor_width_slider`
@@ -30,8 +30,12 @@ The original framework container and these six plugins were interactively tested
 - `fence_enhance`
 - `command_palette`
 - `markmap`
+- `action_buttons`
+- `preferences`
+- `right_click_menu`
+- `text_stylize`
 
-Each test verified JavaScript initialization, rendered UI, real interaction, and persistence where applicable. Command-palette and modifier-click shortcuts passed, repeated cold startup passed, and authenticated runtime reports were observed beyond the former ten-second lifecycle timeout. The universal vendor app and architecture-specific synthetic CI cover arm64/x86_64 mechanics; physical x86_64 interactive testing remains outstanding.
+Each test verified JavaScript initialization, rendered UI, real interaction, and persistence where applicable. Command-palette and modifier-click shortcuts passed, repeated cold startup passed, and authenticated runtime reports were observed beyond the former ten-second lifecycle timeout. A default-configuration run also loaded 46 plugins without console errors or unhandled rejections; that is startup evidence, not a feature-level claim for all 46. The universal vendor app and architecture-specific synthetic CI cover arm64/x86_64 mechanics; physical x86_64 interactive testing remains outstanding.
 
 ### Security review
 
@@ -39,8 +43,8 @@ The review fixed writable plugin roots, absent Origin enforcement, symlink trave
 
 ### Tests
 
-- Node.js 22.23.5 full suite: 1,671 tests; 1,670 passed; 0 failed; 1 skipped; no hang
-- Focused macOS/security suite: 18 passed; 0 failed
+- Node.js 22.23.5 full suite: 1,674 tests; 1,673 passed; 0 failed; 1 skipped; no hang
+- Focused macOS/security and tab suite: 76 passed; 0 failed
 - Synthetic dry-run/install/reinstall/failed-install rollback/failed-uninstall rollback/uninstall: passed locally
 - Real isolated app uninstall/reinstall and `codesign --verify --deep --strict`: passed
 - GitHub Actions: Ubuntu Node 22/24 and macOS 15 arm64/x86_64 results must be inserted here after the public run completes
@@ -48,7 +52,8 @@ The review fixed writable plugin roots, absent Origin enforcement, symlink trave
 ### Limitations
 
 - experimental support for Typora 1.14.15 only
-- only the six listed plugins are claimed compatible
+- only the ten listed plugins are feature-level compatible
+- `commander` is deliberately unavailable because arbitrary shell execution is outside the secure bridge; recursive document-directory features remain restricted
 - ad-hoc signed and not Apple-notarized
 - same-user processes can read the embedded bridge token
 - no physical Intel Mac interactive run yet

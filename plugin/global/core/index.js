@@ -98,6 +98,14 @@ async function loadPlugins(configs) {
 }
 
 async function loadPlugin(fixedName, config) {
+  if (fixedName === "commander" && global.__typoraMacCapabilities?.shellExecution === false) {
+    global.__typoraMacReportRuntime?.({
+      kind: "plugin-unsupported",
+      plugin: fixedName,
+      reason: "secure macOS adapter does not expose arbitrary shell execution",
+    })
+    return null
+  }
   const { plugin: PluginClass } = utils.require("./plugin", fixedName)
   if (!PluginClass) {
     throw new Error(`Plugin not found: ${fixedName}`)

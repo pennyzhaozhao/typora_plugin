@@ -8,14 +8,77 @@ module.exports = async function runMacOSRuntimeTest({ plan, report, container })
   const waitFor = async (fn, timeout = 5000) => {
     const start = Date.now()
     while (Date.now() - start < timeout) {
-      const value = fn()
+      const value = await fn()
       if (value) return value
       await wait(50)
     }
     return null
   }
 
+  const isVisible = element => element && !element.hidden && !element.classList.contains("plugin-common-hidden")
+  const runShellUITest = async () => {
+    const expected = plan.plugins || ["action_buttons", "preferences", "right_click_menu", "text_stylize"]
+    const plugins = Object.fromEntries(expected.map(name => [name, container.getPlugin(name)]))
+    record("javascriptLoaded", expected.every(name => plugins[name]?.fixedName === name))
+    if (!result.checks.javascriptLoaded) {
+      const missing = expected.filter(name => !plugins[name])
+      throw new Error(`plugins not enabled: ${missing.join(", ")}`)
+    }
+
+    const buttonGroup = await waitFor(() => document.querySelector("#plugin-action-buttons"))
+    const gear = await waitFor(() => Array.from(buttonGroup?.querySelectorAll(".action-item") || [])
+      .find(item => item.querySelector(".fa-gear")))
+    record("actionButtonsRendered", buttonGroup && gear)
+    gear?.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }))
+
+    const preferencesMask = await waitFor(() => {
+      const element = document.querySelector(".plugin-preferences-mask")
+      return isVisible(element) ? element : null
+    })
+    const preferencesMenu = document.querySelector(".plugin-preferences-menu")
+    record("preferencesOpened", preferencesMask && preferencesMenu?.children.length > 0)
+
+    await plugins.preferences.switchMenu("text_stylize")
+    const form = document.querySelector(".plugin-preferences-form")
+    const originalWidth = plugins.text_stylize.config.PANEL_WIDTH
+    form?.dispatchEvent(new CustomEvent("form-crud", {
+      bubbles: true,
+      detail: { key: "PANEL_WIDTH", value: originalWidth },
+    }))
+    const persisted = await waitFor(async () => {
+      const settings = await plugins.preferences.utils.settings.read()
+      return settings.text_stylize?.PANEL_WIDTH === originalWidth
+    })
+    record("preferencesPersisted", persisted)
+    await plugins.preferences.call()
+
+    const contextEntry = await waitFor(() => document.querySelector('#context-menu [data-key="typora-plugin"], #context-menu [data-key="typora-plugin-no-extra"]'))
+    record("rightClickMenuRendered", contextEntry)
+    contextEntry?.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }))
+    const stylizeEntry = await waitFor(() => document.querySelector('.plugin-menu-2nd [data-key="text_stylize"]'))
+    stylizeEntry?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }))
+
+    const stylizePanel = await waitFor(() => {
+      const element = document.querySelector("#plugin-text-stylize")
+      return isVisible(element) ? element : null
+    })
+    record("textStylizeOpened", stylizePanel && stylizePanel.querySelectorAll(".stylize-tools [data-tool]").length > 0)
+    const weightTool = stylizePanel?.querySelector('[data-tool="weight"]')
+    weightTool?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }))
+    record("textStylizeInteraction", weightTool?.classList.contains("select"))
+    plugins.text_stylize.call()
+
+    record("uiRendered", result.checks.actionButtonsRendered && result.checks.preferencesOpened
+      && result.checks.rightClickMenuRendered && result.checks.textStylizeOpened)
+    record("interaction", result.checks.textStylizeInteraction)
+    record("persistence", result.checks.preferencesPersisted)
+  }
+
   try {
+    if (pluginName === "shell_ui") {
+      await runShellUITest()
+      return
+    }
     const plugin = container.getPlugin(pluginName)
     if (plan.document && plugin?.utils?.getFilePath() !== plan.document) {
       File.editor.library.openFile(plan.document)
@@ -109,26 +172,27 @@ module.exports = async function runMacOSRuntimeTest({ plan, report, container })
     }
   } catch (error) {
     result.errors.push(error?.stack || String(error))
+  } finally {
+    result.context = {
+      filePath: (window.File && (File.filePath || File.bundle?.filePath)) || "",
+      writeChildren: document.querySelectorAll("#write > [cid]").length,
+      headings: document.querySelectorAll('#write > [mdtype="heading"]').length,
+      quotes: document.querySelectorAll("#write blockquote, #write .md-alert").length,
+      fences: document.querySelectorAll("#write .md-fences[cid]").length,
+      megaMenuMethods: (() => {
+        const menu = window.File?.megaMenu
+        if (!menu) return []
+        const own = Object.getOwnPropertyNames(menu)
+        const inherited = Object.getOwnPropertyNames(Object.getPrototypeOf(menu) || {})
+        return Array.from(new Set(own.concat(inherited))).filter(name => typeof menu[name] === "function").sort()
+      })(),
+      nodes: Array.from(document.querySelectorAll("#write > [cid]"), node => ({
+        tag: node.tagName,
+        mdtype: node.getAttribute("mdtype"),
+        classes: Array.from(node.classList),
+      })),
+    }
+    result.passed = !result.errors.length && Object.values(result.checks).every(Boolean)
+    report(result)
   }
-  result.context = {
-    filePath: (window.File && (File.filePath || File.bundle?.filePath)) || "",
-    writeChildren: document.querySelectorAll("#write > [cid]").length,
-    headings: document.querySelectorAll('#write > [mdtype="heading"]').length,
-    quotes: document.querySelectorAll("#write blockquote, #write .md-alert").length,
-    fences: document.querySelectorAll("#write .md-fences[cid]").length,
-    megaMenuMethods: (() => {
-      const menu = window.File?.megaMenu
-      if (!menu) return []
-      const own = Object.getOwnPropertyNames(menu)
-      const inherited = Object.getOwnPropertyNames(Object.getPrototypeOf(menu) || {})
-      return Array.from(new Set(own.concat(inherited))).filter(name => typeof menu[name] === "function").sort()
-    })(),
-    nodes: Array.from(document.querySelectorAll("#write > [cid]"), node => ({
-      tag: node.tagName,
-      mdtype: node.getAttribute("mdtype"),
-      classes: Array.from(node.classList),
-    })),
-  }
-  result.passed = !result.errors.length && Object.values(result.checks).every(Boolean)
-  report(result)
 }

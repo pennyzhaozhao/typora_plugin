@@ -24,7 +24,7 @@
 | Linux | 上游项目正式支持 |
 | macOS | 仅实验性支持 Typora 1.14.15 |
 
-macOS 移植并非 Typora 官方功能，也未经 Apple 公证。它只安装到独立的 ad-hoc 签名应用副本，不要求修改 `/Applications/Typora.app`。目前仅实际验证了以下六个插件：`callouts`、`editor_width_slider`、`collapse_paragraph`、`fence_enhance`、`command_palette` 和 `markmap`。下方其他插件不能视为已兼容 macOS。
+macOS 移植并非 Typora 官方功能，也未经 Apple 公证。它只安装到独立的 ad-hoc 签名应用副本，不要求修改 `/Applications/Typora.app`。目前已实际验证十个插件：`callouts`、`editor_width_slider`、`collapse_paragraph`、`fence_enhance`、`command_palette`、`markmap`、`action_buttons`、`preferences`、`right_click_menu` 和 `text_stylize`。另有 46 个默认启用插件可完成 JavaScript 启动，但除上述十个以外，尚不能视为已完成 macOS 功能兼容验证。
 
 [macOS 中文安装说明](docs/macos.zh-CN.md) · [macOS Installation (English)](docs/macos.md) · [安全审计](docs/macos-security-audit.md)
 

@@ -65,11 +65,21 @@
     return body.result
   }
 
+  function hydrateStats(value) {
+    value.isFile = function () { return value.type === "file" }
+    value.isDirectory = function () { return value.type === "directory" }
+    value.isSymbolicLink = function () { return value.type === "symlink" }
+    return value
+  }
+
   var fs = {
     readFileSync: function (file, encoding) { return rpc("fs.readFile", [file, encoding || "utf8"]) },
     writeFileSync: function (file, data, encoding) { return rpc("fs.writeFile", [file, data, encoding || "utf8"]) },
     existsSync: function (file) { return rpc("fs.exists", [file]) },
-    statSync: function (file) { var value = rpc("fs.stat", [file]); value.isFile = function () { return value.type === "file" }; value.isDirectory = function () { return value.type === "directory" }; return value },
+    statSync: function (file) { return hydrateStats(rpc("fs.stat", [file])) },
+    // Authorized paths cannot contain symlinks, so lstat has the same safe
+    // result as stat inside the bridge's deliberately restricted view.
+    lstatSync: function (file) { return hydrateStats(rpc("fs.stat", [file])) },
     readdirSync: function (file) { return rpc("fs.readdir", [file]) },
     mkdirSync: function (file, options) { return rpc("fs.mkdir", [file, !!(options && options.recursive)]) },
   }
@@ -78,6 +88,8 @@
     writeFile: function (file, data, encoding) { return Promise.resolve().then(function () { return fs.writeFileSync(file, data, encoding) }) },
     readdir: function (file) { return Promise.resolve().then(function () { return fs.readdirSync(file) }) },
     mkdir: function (file, options) { return Promise.resolve().then(function () { return fs.mkdirSync(file, options) }) },
+    stat: function (file) { return Promise.resolve().then(function () { return fs.statSync(file) }) },
+    lstat: function (file) { return Promise.resolve().then(function () { return fs.lstatSync(file) }) },
   }
   fs.readFile = function (file, encoding, callback) { fs.promises.readFile(file, encoding).then(function (data) { callback(null, data) }, callback) }
   fs.writeFile = function (file, data, encoding, callback) { fs.promises.writeFile(file, data, encoding).then(function () { callback(null) }, callback) }
@@ -85,6 +97,10 @@
     readFile: fs.promises.readFile,
     writeFile: fs.promises.writeFile,
     readdir: fs.promises.readdir,
+    stat: fs.promises.stat,
+    lstat: fs.promises.lstat,
+    statSync: fs.statSync,
+    lstatSync: fs.lstatSync,
     access: function (file) { return Promise.resolve().then(function () { if (!fs.existsSync(file)) throw new Error("ENOENT") }) },
     remove: function () { return Promise.reject(new Error("remove is disabled by the macOS permission adapter")) },
   }
@@ -152,6 +168,11 @@
   window.global.dirname = ROOT.replace(/\/$/, "")
   window.global.__dirname = window.global.dirname
   window.global.reqnode = reqnode
+  window.global.__typoraMacCapabilities = Object.freeze({
+    documentFilesystem: false,
+    electron: false,
+    shellExecution: false,
+  })
   window.process = window.process || { platform: "darwin", env: {}, versions: {} }
   window.__typoraMacReportProbe = function (report) { return rpc("probe.report", [report]) }
   window.__typoraMacReportRuntime = function (report) { return rpc("runtime.report", [report]) }

@@ -47,13 +47,18 @@ WKWebView 的本地文件使用 `null` Origin，因此必须接受它，但 Orig
 | `fence_enhance` | 工具栏及真实代码块折叠 | 通过 | 默认未配置 | 可用 |
 | `command_palette` | 搜索、Esc 关闭 | 不适用 | `Control/Command+Shift+P` 通过 | 可用 |
 | `markmap` | SVG 节点及 Fit 操作 | 会话内 | 默认未配置 | 可用 |
+| `action_buttons` | 右下角悬浮齿轮按钮及点击 | 不适用 | 鼠标交互通过 | 可用 |
+| `preferences` | 配置面板及插件菜单 | 写入并回读通过 | 由悬浮按钮打开 | 可用 |
+| `right_click_menu` | 插件子菜单及动作派发 | 不适用 | 右键菜单交互通过 | 可用 |
+| `text_stylize` | 文字样式面板及工具 | 通过 Preferences | 工具悬停/选择通过 | 可用 |
 
-实际测试使用 `/private/tmp` 中的 Typora 1.14.15、真实 Markdown 文档、认证运行报告，并在启动后观察 14 秒。框架多次冷启动成功；卸载/重装同时有真实应用测试和自动回归测试。
+实际测试使用 `/private/tmp` 中的 Typora 1.14.15、真实 Markdown 文档、认证运行报告，并在启动后观察 20 秒。框架多次冷启动成功；默认配置下有 46 个插件完成 JavaScript 启动，且没有控制台错误或未处理 Promise 拒绝。该结果只证明启动成功，不代表 46 个插件均已完成全部功能交互验证。
 
 ## 已知限制
 
 - ad-hoc 签名仅用于本机开发；不是 Apple 公证或可分发签名。
-- 只声明上述六个插件与 Typora 1.14.15 兼容，其他插件尚未验证。
+- 只声明上述十个插件与 Typora 1.14.15 完成功能级兼容验证；其他插件仅有启动证据或尚未验证。
+- `commander` 因安全桥接不开放任意 Shell 执行而明确不可用；`sidebar_enhance` 文件计数及其他递归扫描文档目录的功能，在实现安全的用户目录授权机制前会被禁用或不可用。
 - 需要用户级 LaunchAgent，并占用本地端口 45678。
 - 不要放在桌面/iCloud/File Provider 同步位置；扩展属性可能破坏签名。
 - 不会自动移除 quarantine，不会关闭 SIP 或 Gatekeeper，也不会修改 Typora 压缩源码。
